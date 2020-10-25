@@ -1,0 +1,382 @@
+import requests
+from bs4 import BeautifulSoup
+from time import sleep
+from random import randint
+from pprint import pprint
+import re
+
+
+class Google:
+
+    def __init__(self):
+
+        sleep(randint(3, 6))
+        self.headers = 0
+
+        self.keyword = input("Enter Domain Name to search: ")
+
+        self.params = {
+        'source': 'hp',
+        'q': self.keyword,
+        'oq': self.keyword
+        }
+
+    def headers_parser(self):
+
+        headers = ("""Host: www.google.com
+        User-Agent: Mozilla/5.0 (Windows Phone 8.1; ARM; Trident/7.0; Touch; WebView/2.0; rv:11.0; IEMobile/11.0; NOKIA; Lumia 525) like Gecko
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+        Accept-Language: en-US,en;q=0.5
+        Accept-Encoding: gzip, deflate, br
+        Connection: keep-alive
+        Cookie: CGIC=Ij90ZXh0L2h0bWwsYXBwbGljYXRpb24veGh0bWwreG1sLGFwcGxpY2F0aW9uL3htbDtxPTAuOSwqLyo7cT0wLjg; 1P_JAR=2020-10-16-06; NID=204=HBXVgBWBe1QyIQSm1tTsti5kHHU6Ko0q_NSMVTwdiVklLu8oR2o6SBZRnCGy0cd-ai3rh9joF3MuRrb8LUpwScWdM85-DgYDGz6V8r>
+        Upgrade-Insecure-Requests: 1
+        Cache-Control: max-age=0
+        E: Trailers""")
+
+        parsed_headers = {}
+        for header in headers.split('\n'):
+                split_header = header.split(': ')
+                parsed_headers[split_header[0]] = split_header[1]
+        return parsed_headers
+        self.headers = headers_parser()
+
+
+
+    def robot_text(self):
+        
+        
+        res = requests.get('http://www.' + self.keyword + '/robots.txt')
+
+        with open("robotstext.html", "w") as f:
+            f.write(res.text)
+
+    def pastebin(self):
+        
+        params = {
+        'source': 'hp',
+        'q': 'site:pastebin.com intext:' '"' + self.keyword + '"',
+        'oq': 'site:pastebin.com intext:' '"' + self.keyword + '"'
+        }       
+        
+        res = requests.get('https://www.google.com/search', params=params, headers=self.headers)
+        with open("pastebin.html", "w") as f:
+            f.write(res.text)
+
+    def bs_pastebin(self):
+        
+        with open("pastebin.html", "r") as f:
+            html = f.read()
+        soup = BeautifulSoup(html, 'lxml')
+        divs = soup.select('.kCrYT:first-child')
+        for div in divs:
+           url = div.select_one('a')['href'].split("?q=")[1]
+           url_new = url.split("&")[0]
+           pprint(url_new)  
+
+    def admin(self):
+        #site:hag.co.il "admin"
+        params = {
+        'source': 'hp',
+        'q': 'site:' + self.keyword + ' admin',
+        'oq': 'site:' + self.keyword + ' admin'
+        }       
+        
+        res = requests.get('https://www.google.com/search', params=params, headers=self.headers)
+        with open("admin.html", "w") as f:
+            f.write(res.text)        
+
+    def bs_admin(self):
+        
+        with open("admin.html", "r") as f:
+            html = f.read()
+        soup = BeautifulSoup(html, 'lxml')
+        divs = soup.select('.kCrYT:first-child')
+        for div in divs:
+           url = div.select_one('a')['href'].split("?q=")
+           pprint(url) 
+
+    def login(self):
+        #site:hag.co.il "admin"
+        params = {
+        'source': 'hp',
+        'q': 'site:' + self.keyword + ' login',
+        'oq': 'site:' + self.keyword + ' login'
+        }       
+        
+        res = requests.get('https://www.google.com/search', params=params, headers=self.headers)
+        with open("login.html", "w") as f:
+            f.write(res.text)        
+
+    def bs_login(self):
+        
+        with open("login.html", "r") as f:
+            html = f.read()
+        soup = BeautifulSoup(html, 'lxml')
+        divs = soup.select('.kCrYT:first-child')
+        for div in divs:
+           url = div.select_one('a')['href'].split("?q=")
+           pprint(url) 
+
+
+class Linkedin:
+
+    def __init__(self):
+
+
+        self.url = "https://www.linkedin.com/voyager/api/voyagerSearchDashTypeahead?"
+ 
+        self.keyword = input("Enter keyword to search: ")
+ 
+        self.params = {
+        'decorationId': 'com.linkedin.voyager.dash.deco.search.typeahead.GlobalTypeaheadCollection-6',
+        'q': 'globalTypeahead',
+        'query': self.keyword
+        }
+
+        self.cookies = {
+        'li_sugr': '230f1f78-98c5-41ab-b83e-ceec837771d1',
+        'bcookie': 'v=2&387f3c36-dc39-4767-8311-7332530fcb06',
+        'lissc': '1',
+        'lidc': 'b=VB68:s=V:r=V:g=2698:u=7:i=1603441544:t=1603527735:v=1:sig=AQFu0zbv5QmXgrhENUZZIfjwebBwLoOV',
+        'UserMatchHistory': 'AQJiDt0vO5c2GQAAAXVUkDvRAyxas3tPZNJ1_RuoHT_7nqZAG7cr3x7OZYIDzmBW0taH5CeF50YroFKL0JxhDHC-ZMBgBhJ9_rRl-5LP985Uyk1u0AfkKkt7EiVfh_v6nbdqmhMLvOFQJ-sGtsQkKj3JHyAI2NBrm1og5dAD6uwf2HFMy4eQlDV30Ltv88hCEAZKMBmfArvO9OOAEXQJQVemzZAefOuWizCG22jeMDUJKZRglYy6UW_4jfpi0UNk-zHatog',
+        'bscookie': 'v=1&202010221328590dc7816b-b098-4a19-89a0-1b7c04257195AQHSSmHWKrpjnsdI0SvAamdPXN_3zPtt',
+        'fid': 'AQFtwCVZR6O8rQAAAXVUjjS0dIhMlswrnOWR5T160GvqeW6kLXyDfH4wBAfWRTxEvmu3LbGvmyKRgQ',
+        'JSESSIONID': 'ajax:2156804241168545389',
+        'lang': 'v=2&lang=en-us',
+        '_ga': 'GA1.2.2052898150.1603441407',
+        '_gid': 'GA1.2.1731223029.1603441407',
+        'fcookie': 'AQHriNsnl_Y-pgAAAXVUjlm_hiS-vmoZxQAeE7riabX3HHO3WqKQ3x2rbKf2xgLJlWNmlOMlAmMKoz-AbfpKsXF7go_qGxKB0lRouU2STzs5quCMwR77ajlQCSjQZ2gYW1tDIaODHpn2kpvCea8gIxAughSqqDyRZ2hfN3T48asKwv-goKX3GvEAiH-16gIEjF2fexv9_KA9K-5Rz0saKsQGbcU0lSWpSyFPFy4_nshJ0vnewhTVmn1sVgtiaFKaQCaqBbQWuA1E7-9iYMBGgmQD0jNkyRlzqnXlT9UW262DZQJcu78602oxRfkDq/6gpu+npjw17AQYnyD45VaWo7iu0gayB0pijFN+kQ==',
+        'AMCV_14215E3D5995C57C0A495C55%40AdobeOrg': '-408604571%7CMCIDTS%7C18559%7CvVersion%7C4.6.0%7CMCMID%7C03726280089049294242382308516806636026%7CMCAAMLH-1604046343%7C6%7CMCAAMB-1604046343%7CRKhpRz8krg2tLO6pguXWp5olkAcUniQYPHaMWWgdJ3xzPWQmdj0y%7CMCOPTOUT-1603448743s%7CNONE%7CMCCIDH%7C-685592662',
+        'AMCVS_14215E3D5995C57C0A495C55%40AdobeOrg': '1',
+        'aam_uuid': '04247370106846093712432093082806075953',
+        'liap': 'true',
+        'li_at': 'AQEDARwK4_gCWR60AAABdVSQFb8AAAF1eJyZv1YAW6Yx2ouKatbcWybTmAJHj3OsRemy-3oqgz-qS-bx9lzA5MEfJmjdTFFACBW6bgKhe5I0yvWE2d7ckLjczEHmHubTRL4eTvLZ2WQnFZCsLQoNB3gN',
+        'li_oatml': 'AQGPTNmAvmJtpgAAAXVUkEHjwlHz96dlePNzlqZwa5MfVLqgk2tjKMo8J4fVTYs7OjZ_OgvANF4Og1Y85Y15TPmKT8CczPQT', }
+
+        self.headers = {
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0',
+        'Accept': 'application/vnd.linkedin.normalized+json+2.1',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Referer': 'https://www.linkedin.com/feed/',
+        'x-li-lang': 'en_US',
+        'x-li-track': '{"clientVersion":"1.7.4317","mpVersion":"1.7.4317","osName":"web","timezoneOffset":-4,"deviceFormFactor":"DESKTOP","mpName":"voyager-web","displayDensity":1,"displayWidth":1920,"displayHeight":1080}',
+        'x-li-page-instance': 'urn:li:page:d_flagship3_feed;asRlzgPbTySAcdRhxBBekQ==',
+        'csrf-token': 'ajax:2156804241168545389',
+        'x-restli-protocol-version': '2.0.0',
+        'Connection': 'keep-alive',
+        'TE': 'Trailers', }
+
+    def res(self):
+
+        self.res = requests.get(self.url, params=self.params, headers=self.headers, cookies=self.cookies)
+
+        with open("linkdin.html", "w") as f:
+            f.write(self.res.text)
+
+        #with open("linkdin.html", "r") as f:
+        #    res = f.read()
+
+    def jres(self):
+
+        self.comp_lis = []
+        json_res = self.res.json()
+        for element in json_res['data']['elements']:
+            if 'Company' in (element['entityLockupView']['subtitle']['text']):
+                self.comp_lis.append((element['entityLockupView']['title']['text']))
+                #pprint(element['entityLockupView']['title']['text'])
+        pprint(self.comp_lis)
+        self.choose_comp = int(input("Please choose a company from the list: "))
+        self.choose_comp -= 1
+
+    def search_workers(self):
+
+        cookies = {
+            'li_sugr': '230f1f78-98c5-41ab-b83e-ceec837771d1',
+            'bcookie': 'v=2&387f3c36-dc39-4767-8311-7332530fcb06',
+            'lissc': '1',
+            'lidc': 'b=VB68:s=V:r=V:g=2698:u=7:i=1603460614:t=1603527735:v=1:sig=AQG-euPFBAgY9XeKtDRnbn1jz4aX3pvF',
+            'UserMatchHistory': 'AQJf1gBY5Qk9jQAAAXVVprqqq89BwEVWsFM7fnQiuKX6e8sis4TUNZxb8tn_Wv3zhWij3wYy9IchNNxfUjKt8hOOimAm-2UTc9iSt0YB25iHmjMGHh442pDXrh66t2rE0Pu2xLc50ZhXqJo164dhiVZqpQqFn-fsLqCklQ1p1ctMzgClK_ogMm8mvvOw7tb1IidJdqRMaAPzvd3OT3ahdzVKHxsE39hTJvieMBXCp_MgNDPLvWDRH2l5LCq4lA3OWPbPlzA',
+            'bscookie': 'v=1&202010221328590dc7816b-b098-4a19-89a0-1b7c04257195AQHSSmHWKrpjnsdI0SvAamdPXN_3zPtt',
+            'fid': 'AQFtwCVZR6O8rQAAAXVUjjS0dIhMlswrnOWR5T160GvqeW6kLXyDfH4wBAfWRTxEvmu3LbGvmyKRgQ',
+            'JSESSIONID': 'ajax:2156804241168545389',
+            'lang': 'v=2&lang=en-us',
+            '_ga': 'GA1.2.2052898150.1603441407',
+            '_gid': 'GA1.2.1731223029.1603441407',
+            'fcookie': 'AQHriNsnl_Y-pgAAAXVUjlm_hiS-vmoZxQAeE7riabX3HHO3WqKQ3x2rbKf2xgLJlWNmlOMlAmMKoz-AbfpKsXF7go_qGxKB0lRouU2STzs5quCMwR77ajlQCSjQZ2gYW1tDIaODHpn2kpvCea8gIxAughSqqDyRZ2hfN3T48asKwv-goKX3GvEAiH-16gIEjF2fexv9_KA9K-5Rz0saKsQGbcU0lSWpSyFPFy4_nshJ0vnewhTVmn1sVgtiaFKaQCaqBbQWuA1E7-9iYMBGgmQD0jNkyRlzqnXlT9UW262DZQJcu78602oxRfkDq/6gpu+npjw17AQYnyD45VaWo7iu0gayB0pijFN+kQ==',
+            'AMCV_14215E3D5995C57C0A495C55%40AdobeOrg': '-408604571%7CMCIDTS%7C18559%7CvVersion%7C4.6.0%7CMCMID%7C03726280089049294242382308516806636026%7CMCAAMLH-1604064439%7C6%7CMCAAMB-1604064439%7CRKhpRz8krg2tLO6pguXWp5olkAcUniQYPHaMWWgdJ3xzPWQmdj0y%7CMCOPTOUT-1603466839s%7CNONE%7CMCCIDH%7C-685592662',
+            'AMCVS_14215E3D5995C57C0A495C55%40AdobeOrg': '1',
+            'aam_uuid': '04247370106846093712432093082806075953',
+            'liap': 'true',
+            'li_at': 'AQEDARwK4_gCWR60AAABdVSQFb8AAAF1eJyZv1YAW6Yx2ouKatbcWybTmAJHj3OsRemy-3oqgz-qS-bx9lzA5MEfJmjdTFFACBW6bgKhe5I0yvWE2d7ckLjczEHmHubTRL4eTvLZ2WQnFZCsLQoNB3gN',
+            'li_oatml': 'AQGPTNmAvmJtpgAAAXVUkEHjwlHz96dlePNzlqZwa5MfVLqgk2tjKMo8J4fVTYs7OjZ_OgvANF4Og1Y85Y15TPmKT8CczPQT',
+            'sdsc': '1%3A1SZM1shxDNbLt36wZwCgPgvN58iw%3D',
+        }
+
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0',
+            'Accept': 'application/vnd.linkedin.normalized+json+2.1',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Referer': 'https://www.linkedin.com/search/results/people/?keywords=see-secure%20Consulting&origin=GLOBAL_SEARCH_HEADER',
+            'x-li-lang': 'en_US',
+            'x-li-track': '{"clientVersion":"1.7.4317","mpVersion":"1.7.4317","osName":"web","timezoneOffset":-4,"deviceFormFactor":"DESKTOP","mpName":"voyager-web","displayDensity":1,"displayWidth":1920,"displayHeight":1080}',
+            'x-li-page-instance': 'urn:li:page:d_flagship3_search_srp_people;lIKmcHvLTYuSRg72OoJzkA==',
+            'csrf-token': 'ajax:2156804241168545389',
+            'x-restli-protocol-version': '2.0.0',
+            'Connection': 'keep-alive',
+            'TE': 'Trailers',
+        }
+
+        params = (
+            ('count', '10'),
+            ('filters', 'List(currentCompany->18417265,resultType->PEOPLE)'),
+            ('keywords', self.comp_lis[self.choose_comp]),
+            ('origin', 'FACETED_SEARCH'),
+            ('q', 'all'),
+            ('queryContext', 'List(spellCorrectionEnabled->true,relatedSearchesEnabled->true)'),
+            ('start', '0'),
+        )
+
+        res_workers = requests.get('https://www.linkedin.com/voyager/api/search/blended', headers=headers, params=params, cookies=cookies)
+        with open("search_workers.html", "w") as f:
+            f.write(res_workers.text)
+
+        jres_workers = res_workers.json()
+        
+        try:
+        
+            for element in (jres_workers['data']['elements'][1]['elements']):
+                print('\n')
+                if element['type'] == ("PROFILE"):
+                    pprint(element['title']['text'])
+                    pprint(element['headline']['text'])
+                    print('\n')
+                    
+            for element in (jres_workers['data']['elements'][2]['elements']):
+                if element['type'] == ("PROFILE"):
+                    pprint(element['title']['text'])
+                    pprint(element['headline']['text'])
+                    print('\n')
+            
+            for element in (jres_workers['data']['elements'][3]['elements']):
+                if element['type'] == ("PROFILE"):
+                    pprint(element['title']['text'])
+                    pprint(element['headline']['text'])
+                    print('\n')    
+            for element in (jres_workers['data']['elements'][4]['elements']):
+                if element['type'] == ("PROFILE"):
+                    pprint(element['title']['text'])
+                    pprint(element['headline']['text'])
+                    print('\n')
+            for element in (jres_workers['data']['elements'][5]['elements']):
+                if element['type'] == ("PROFILE"):
+                    pprint(element['title']['text'])
+                    pprint(element['headline']['text'])
+                    print('\n')    
+            for element in (jres_workers['data']['elements'][6]['elements']):
+                if element['type'] == ("PROFILE"):
+                    pprint(element['title']['text'])
+                    pprint(element['headline']['text'])
+                    print('\n')
+            for element in (jres_workers['data']['elements'][7]['elements']):
+                if element['type'] == ("PROFILE"):
+                    pprint(element['title']['text'])
+                    pprint(element['headline']['text'])
+                    print('\n')
+            for element in (jres_workers['data']['elements'][0]['elements']):
+                if element['type'] == ("PROFILE"):
+                    pprint(element['title']['text'])
+                    pprint(element['headline']['text'])
+                    
+        except:
+            pass
+        
+
+class Emails:
+
+    def __init__(self):
+
+        sleep(randint(3, 6))
+        self.headers = 0
+
+        self.keyword = input("Enter Domain Name to search Emails: ")
+        self.new_keyword = "site:" + self.keyword + ' intext:"@' + self.keyword
+
+        self.params = {
+        'source': 'hp',
+        'q': self.new_keyword,
+        'oq': self.new_keyword
+        }
+
+    def headers_parser(self):
+
+        headers = ("""Host: www.google.com
+        User-Agent: Mozilla/5.0 (Windows Phone 8.1; ARM; Trident/7.0; Touch; WebView/2.0; rv:11.0; IEMobile/11.0; NOKIA; Lumia 525) like Gecko
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+        Accept-Language: en-US,en;q=0.5
+        Accept-Encoding: gzip, deflate, br
+        Connection: keep-alive
+        Cookie: CGIC=Ij90ZXh0L2h0bWwsYXBwbGljYXRpb24veGh0bWwreG1sLGFwcGxpY2F0aW9uL3htbDtxPTAuOSwqLyo7cT0wLjg; 1P_JAR=2020-10-16-06; NID=204=HBXVgBWBe1QyIQSm1tTsti5kHHU6Ko0q_NSMVTwdiVklLu8oR2o6SBZRnCGy0cd-ai3rh9joF3MuRrb8LUpwScWdM85-DgYDGz6V8r>
+        Upgrade-Insecure-Requests: 1
+        Cache-Control: max-age=0
+        E: Trailers""")
+
+        parsed_headers = {}
+        for header in headers.split('\n'):
+                split_header = header.split(': ')
+                parsed_headers[split_header[0]] = split_header[1]
+        return parsed_headers
+        self.headers = headers_parser()
+
+
+    def search_emails_google(self):
+
+        res = requests.get('https://www.google.com/search', params=self.params, headers=self.headers)
+
+        with open("Email_Dorking.html", "w") as f:
+            f.write(res.text)
+
+    def extractEmails(self):
+        
+        with open("Email_Dorking.html", "r") as f:
+            statement = f.read()
+
+        match = re.findall(r'([\w\.-]+)@([\w\.-]+)', statement)
+        print(match)
+
+    def emailhunter(self):
+        
+        hunter_api = '12a251ee225ba5574b4620ce7799fa8005c6162c'
+        res = requests.get('https://api.hunter.io/v2/domain-search?domain='+ self.keyword + '&api_key=12a251ee225ba5574b4620ce7799fa8005c6162c')
+        with open("EmailHunter.html", "w") as f:
+            f.write(res.text)
+            
+        jres_email = res.json()
+        
+        try:
+            for email in (jres_email['data']['emails']):
+                pprint(email['value'])
+        except:
+            pass
+        
+
+email = Emails()
+email.headers_parser()
+email.search_emails_google()
+email.extractEmails()
+email.emailhunter()
+
+google = Google()
+google.headers_parser()
+google.robot_text()
+google.pastebin()
+google.bs_pastebin()
+google.admin()
+google.bs_admin()
+google.login()
+google.bs_login()        
+        
+linkedin = Linkedin()
+linkedin.res()
+linkedin.jres()
+linkedin.search_workers()
